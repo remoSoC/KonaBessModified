@@ -217,7 +217,7 @@ public class KonaBessStr {
     public static String convert_bins_khaje(int which, Activity activity) {
         switch (which) {
             case 0:
-                return activity.getResources().getString(R.string.khaje);
+                return activity.getResources().getString(R.string.sd680;
         }
         return activity.getResources().getString(R.string.unknown_table) + which;
     }
