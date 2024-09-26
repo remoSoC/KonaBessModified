@@ -20,15 +20,17 @@ public class KonaBessCore {
     public static String dts_path;
     private static int dtb_num;
     public static String boot_name;
-    public static ChipInfo.type chipType = ChipInfo.type.khaje;
 
+    public static ChipInfo.type chipType = ChipInfo.type.khaje;
     private enum dtb_types {
         dtb,
         kernel_dtb,
         both
     }
 
+    private static dtb_types dtb_type;
 
+    public static void cleanEnv(Context context) throws IOException {
         Process process = new ProcessBuilder("sh").start();
         BufferedReader bufferedReader =
                 new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -193,116 +195,103 @@ public class KonaBessCore {
     public static ArrayList<dtb> dtbs;
 
     public static void checkDevice(Context context) throws IOException {
-        dtbs = new ArrayList<>();
-        for (int i = 0; i < dtb_num; i++) {
-            if (checkChip(context, i, "kona v2.1")
-                    || KonaBessCore.getCurrent("device").equals("OP4A79") && checkChip(context, i
-                    , "kona v2")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = checkSingleBin(context, i) ? ChipInfo.type.kona_singleBin :
-                        ChipInfo.type.kona;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "SM8150 v2")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = checkSingleBin(context, i) ? ChipInfo.type.msmnile_singleBin :
-                        ChipInfo.type.msmnile;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Lahaina V2.1")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = checkSingleBin(context, i) ? ChipInfo.type.lahaina_singleBin :
-                        ChipInfo.type.lahaina;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Lahaina v2.1")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = checkSingleBin(context, i) ? ChipInfo.type.lahaina_singleBin :
-                        ChipInfo.type.lahaina;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Lito")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.lito_v1;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Lito v2")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.lito_v2;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Lagoon")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.lagoon;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "SM6225")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = checkSingleBin(context, i) ? ChipInfo.type.sm6225_singleBin :
-                        ChipInfo.type.sm6225;
-                dtbs.add(dtb);
-            }
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.shima;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Yupik")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.yupik;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Waipio")
-                    || checkChip(context, i, "Waipio v2")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.waipio_singleBin;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Cape")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.cape_singleBin;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Kalama v2")
-                    || checkChip(context, i, "KalamaP v2")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.kalama;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Diwali")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.diwali;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Ukee")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.ukee_singleBin;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Pineapple v2")
-                    || checkChip(context, i, "PineappleP v2")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.pineapple;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Cliffs SoC")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.cliffs_singleBin;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "Cliffs 7 SoC")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.cliffs_7_singleBin;
-                dtbs.add(dtb);
-            } else if (checkChip(context, i, "KalamaP SG SoC")) {
-                dtb dtb = new dtb();
-                dtb.id = i;
-                dtb.type = ChipInfo.type.kalama_sg_singleBin;
-                dtbs.add(dtb);
-            }
+    dtbs = new ArrayList<>();
+    for (int i = 0; i < dtb_num; i++) {
+        if (checkChip(context, i, "kona v2.1")
+                || KonaBessCore.getCurrent("device").equals("OP4A79") && checkChip(context, i, "kona v2")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = checkSingleBin(context, i) ? ChipInfo.type.kona_singleBin : ChipInfo.type.kona;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "SM8150 v2")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = checkSingleBin(context, i) ? ChipInfo.type.msmnile_singleBin : ChipInfo.type.msmnile;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Lahaina V2.1")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = checkSingleBin(context, i) ? ChipInfo.type.lahaina_singleBin : ChipInfo.type.lahaina;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Khaje") || checkChip(context, i, "qcom,khaje")) { // Added Khaje support
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = checkSingleBin(context, i) ? ChipInfo.type.khaje_singleBin : ChipInfo.type.khaje; // Define new types for Khaje
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Lito")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.lito_v1;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Lito v2")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.lito_v2;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Lagoon")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.lagoon;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Shima")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.shima;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Yupik")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.yupik;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Waipio") || checkChip(context, i, "Waipio v2")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.waipio_singleBin;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Cape")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.cape_singleBin;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Kalama v2") || checkChip(context, i, "KalamaP v2")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.kalama;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Diwali")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.diwali;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Ukee")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.ukee_singleBin;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Pineapple v2") || checkChip(context, i, "PineappleP v2")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.pineapple;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Cliffs SoC")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.cliffs_singleBin;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "Cliffs 7 SoC")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.cliffs_7_singleBin;
+            dtbs.add(dtb);
+        } else if (checkChip(context, i, "KalamaP SG SoC")) {
+            dtb dtb = new dtb();
+            dtb.id = i;
+            dtb.type = ChipInfo.type.kalama_sg_singleBin;
+            dtbs.add(dtb);
         }
     }
+}
+
 
     public static void chooseTarget(dtb dtb, Activity activity) {
         dts_path = activity.getFilesDir().getAbsolutePath() + "/" + dtb.id + ".dts";
